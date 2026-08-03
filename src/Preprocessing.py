@@ -4,9 +4,10 @@ import pandas as pd
 import os
 import sys
 from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 import time
 
-from config import PROCESSED_DIR, RAW_DIR
+from config import PROCESSED_DIR, RAW_DIR, TEST_SIZE
 
 SUBJECTS = list(range(1600, 1651))  # 51 subjects
 SENSORS = [("phone", "accel"), ("phone", "gyro"), ("watch", "accel"), ("watch", "gyro")]
@@ -93,16 +94,38 @@ def main():
         final_df_phone = final_df[final_df["device"] == "phone"].drop(columns="device")
         final_df_watch = final_df[final_df["device"] == "watch"].drop(columns="device")
 
-        phone_path = os.path.join(
-            PROCESSED_DIR, f"phone_feature_extracted({args.window}s).csv"
+        final_df_phone_train, final_df_phone_test = train_test_split(
+            final_df_phone, test_size=TEST_SIZE, random_state=42
         )
-        watch_path = os.path.join(
-            PROCESSED_DIR, f"watch_feature_extracted({args.window}s).csv"
+
+        final_df_phone_train_path = os.path.join(
+            PROCESSED_DIR, f"phone_feature_extracted_train({args.window}s).csv"
         )
-        final_df_phone.to_csv(phone_path, index=False)
-        final_df_watch.to_csv(watch_path, index=False)
-        print(f"Saved {phone_path}")
-        print(f"Saved {watch_path}")
+        final_df_phone_test_path = os.path.join(
+            PROCESSED_DIR, f"phone_feature_extracted_test({args.window}s).csv"
+        )
+
+        final_df_watch_train, final_df_watch_test = train_test_split(
+            final_df_watch, test_size=TEST_SIZE, random_state=42
+        )
+
+        final_df_watch_train_path = os.path.join(
+            PROCESSED_DIR, f"watch_feature_extracted_train({args.window}s).csv"
+        )
+        final_df_watch_test_path = os.path.join(
+            PROCESSED_DIR, f"watch_feature_extracted_test({args.window}s).csv"
+        )
+
+        final_df_phone_train.to_csv(final_df_phone_train_path, index=False)
+        final_df_phone_test.to_csv(final_df_phone_test_path, index=False)
+
+        final_df_watch_train.to_csv(final_df_watch_train_path, index=False)
+        final_df_watch_test.to_csv(final_df_watch_test_path, index=False)
+
+        print(f"Saved {final_df_phone_train_path}")
+        print(f"Saved {final_df_phone_test_path}")
+        print(f"Saved {final_df_watch_train_path}")
+        print(f"Saved {final_df_watch_test_path}")
     elif do_separate:
         print("No subjects processed for separate dataset.")
 
@@ -117,11 +140,22 @@ def main():
         final_df = final_df.dropna()
         final_df = final_df.drop(columns="window_start")
 
-        aligned_path = os.path.join(
-            PROCESSED_DIR, f"both_aligned_feature_extracted({args.window}s).csv"
+        final_df_train, final_df_test = train_test_split(
+            final_df, test_size=TEST_SIZE, random_state=42
         )
-        final_df.to_csv(aligned_path, index=False)
-        print(f"Saved {aligned_path}")
+
+        final_df_train_path = os.path.join(
+            PROCESSED_DIR, f"both_aligned_feature_extracted_train({args.window}s).csv"
+        )
+        final_df_test_path = os.path.join(
+            PROCESSED_DIR, f"both_aligned_feature_extracted_test({args.window}s).csv"
+        )
+
+        final_df_train.to_csv(final_df_train_path, index=False)
+        final_df_test.to_csv(final_df_test_path, index=False)
+        print(f"Saved {final_df_train_path}")
+        print(f"Saved {final_df_test_path}")
+
     elif do_aligned:
         print("No subjects processed for aligned dataset.")
 
