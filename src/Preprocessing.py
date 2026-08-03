@@ -6,10 +6,7 @@ import sys
 from tqdm import tqdm
 import time
 
-# constants
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
-RAW_DIR = os.path.join(DATA_DIR, "wisdm-dataset", "raw")
-PROCESSED_DIR = os.path.join(DATA_DIR, "processed")
+from config import PROCESSED_DIR, RAW_DIR
 
 SUBJECTS = list(range(1600, 1651))  # 51 subjects
 SENSORS = [("phone", "accel"), ("phone", "gyro"), ("watch", "accel"), ("watch", "gyro")]
