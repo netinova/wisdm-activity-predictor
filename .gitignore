@@ -3,3 +3,4 @@ models/
 .venv/
 .vscode/
 reports/
+src/__pycache__/
