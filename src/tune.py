@@ -12,8 +12,8 @@ from util import load_processed_data
 
 def objective(trial, X, y):
     params = {
-        "n_estimators": trial.suggest_int("n_estimators", 100, 300),
-        "max_depth": trial.suggest_int("max_depth", 15, 40),
+        "n_estimators": trial.suggest_int("n_estimators", 100, 500),
+        "max_depth": trial.suggest_int("max_depth", 20, 40),
         "min_samples_split": trial.suggest_int("min_samples_split", 2, 10),
         "min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 5),
         "criterion": trial.suggest_categorical("criterion", ["gini", "entropy"]),
@@ -42,6 +42,7 @@ def main():
     parser = argparse.ArgumentParser(description="Tune Random Forest for WISDM")
     parser.add_argument(
         "--mode",
+        nargs="+",
         type=str,
         choices=["phone", "watch", "both"],
         help="Which sensor configuration to tune",
@@ -51,17 +52,20 @@ def main():
     if args.mode is None:
         raise SystemExit("Please provide --mode phone, watch, or both")
 
-    X, y = load_processed_data(mode=args.mode, window=WINDOW_SIZE)
+    for mode in args.mode:
+        X, y = load_processed_data(mode=mode, window=WINDOW_SIZE)
 
-    print(f"Running Optuna (50 trials) for {args.mode}...")
-    study = optuna.create_study(
-        direction="maximize", sampler=optuna.samplers.TPESampler(seed=42)
-    )
+        print(f"Running Optuna (50 trials) for {mode}...")
+        study = optuna.create_study(
+            direction="maximize",
+            sampler=optuna.samplers.TPESampler(seed=42),
+            pruner=optuna.pruners.MedianPruner(),
+        )
 
-    study.optimize(lambda trial: objective(trial, X, y), n_trials=50)
-    print(f"Best F1-Macro: {study.best_value:.4f}")
-    print(f"Best Params: {study.best_params}")
-    save_params(args.mode, study.best_params)
+        study.optimize(lambda trial: objective(trial, X, y), n_trials=50)
+        print(f"Best F1-Macro: {study.best_value:.4f}")
+        print(f"Best Params: {study.best_params}")
+        save_params(mode, study.best_params)
 
 
 if __name__ == "__main__":

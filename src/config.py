@@ -10,10 +10,11 @@ MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
 PARAM_DIR = os.path.join(MODELS_DIR, "params")
 REPORTS_DIR = os.path.join(PROJECT_ROOT, "reports")
 
-os.makedirs(PROCESSED_DIR, exist_ok=True)
+DATASET_DOWNLOAD_LINK = "https://archive.ics.uci.edu/static/public/507/wisdm+smartphone+and+smartwatch+activity+and+biometrics+dataset.zip"
+
 os.makedirs(MODELS_DIR, exist_ok=True)
-os.makedirs(PARAM_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
 
 # Preprocessing parameters
 WINDOW_SIZE = 4
