@@ -1,15 +1,13 @@
-import os
-import json
 import argparse
+import json
+import os
+
 import optuna
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score, make_scorer
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import make_scorer, f1_score
-from util import load_processed_data
-
-
 from config import PARAM_DIR, WINDOW_SIZE
+from util import load_processed_data
 
 
 def objective(trial, X, y):
@@ -35,8 +33,8 @@ def save_params(mode, params):
     os.makedirs(PARAM_DIR, exist_ok=True)
     params_filename = f"best_params_{mode}.json"
     params_path = os.path.join(PARAM_DIR, params_filename)
-    with open(params_path, "w") as f:
-        json.dump(params, f, indent=4)
+    with open(params_path, "w", encoding="utf-8") as handle:
+        json.dump(params, handle, indent=4)
         print(f"Params saved to {params_path}")
 
 
@@ -50,44 +48,20 @@ def main():
     )
     args = parser.parse_args()
 
-    if "phone" in args.mode:
-        X, y = load_processed_data(mode="phone", window=WINDOW_SIZE)
+    if args.mode is None:
+        raise SystemExit("Please provide --mode phone, watch, or both")
 
-        print(f"Running Optuna (50 trials) for {"phone"}...")
-        study = optuna.create_study(
-            direction="maximize", sampler=optuna.samplers.TPESampler(seed=42)
-        )
+    X, y = load_processed_data(mode=args.mode, window=WINDOW_SIZE)
 
-        study.optimize(lambda trial: objective(trial, X, y), n_trials=50)
-        print(f"Best F1-Macro: {study.best_value:.4f}")
-        print(f"Best Params: {study.best_params}")
-        save_params(args.mode, study.best_params)
+    print(f"Running Optuna (50 trials) for {args.mode}...")
+    study = optuna.create_study(
+        direction="maximize", sampler=optuna.samplers.TPESampler(seed=42)
+    )
 
-    elif "watch" in args.mode:
-        X, y = load_processed_data(mode="watch", window=WINDOW_SIZE)
-
-        print(f"Running Optuna (50 trials) for {"watch"}...")
-        study = optuna.create_study(
-            direction="maximize", sampler=optuna.samplers.TPESampler(seed=42)
-        )
-
-        study.optimize(lambda trial: objective(trial, X, y), n_trials=50)
-        print(f"Best F1-Macro: {study.best_value:.4f}")
-        print(f"Best Params: {study.best_params}")
-        save_params(args.mode, study.best_params)
-
-    elif "both" in args.mode:
-        X, y = load_processed_data(mode="both", window=WINDOW_SIZE)
-
-        print(f"Running Optuna (50 trials) for {"both"}...")
-        study = optuna.create_study(
-            direction="maximize", sampler=optuna.samplers.TPESampler(seed=42)
-        )
-
-        study.optimize(lambda trial: objective(trial, X, y), n_trials=50)
-        print(f"Best F1-Macro: {study.best_value:.4f}")
-        print(f"Best Params: {study.best_params}")
-        save_params(args.mode, study.best_params)
+    study.optimize(lambda trial: objective(trial, X, y), n_trials=50)
+    print(f"Best F1-Macro: {study.best_value:.4f}")
+    print(f"Best Params: {study.best_params}")
+    save_params(args.mode, study.best_params)
 
 
 if __name__ == "__main__":
