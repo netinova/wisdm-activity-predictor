@@ -2,10 +2,277 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>wisdm predictor</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+
+    <title>Activity Recognition</title>
+
+    <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
-    hi!
+    <div class="app">
+
+      <header class="header">
+        <div>
+          <div class="eyebrow">ML ACTIVITY RECOGNITION</div>
+
+          <h1>Sensor Tracker</h1>
+
+          <p>Real-time activity prediction from phone motion sensors.</p>
+        </div>
+
+        <div class="connection-status">
+          <span id="statusDot" class="status-dot"></span>
+          <span id="statusText">Idle</span>
+        </div>
+      </header>
+
+      <main>
+
+        <section class="prediction-card">
+          <div class="card-header">
+            <div>
+              <span class="card-label">CURRENT ACTIVITY</span>
+            </div>
+
+            <span id="predictionTime" class="timestamp">
+              No prediction yet
+            </span>
+          </div>
+
+          <div class="prediction">
+            <div id="predictionIcon" class="prediction-icon">—</div>
+
+            <div class="prediction-content">
+              <div id="predictionText" class="prediction-text">
+                Waiting for data
+              </div>
+
+              <div id="confidenceText" class="confidence">
+                Start tracking to begin
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="controls-card">
+          <div class="section-title">
+            <div>
+              <h2>Tracking</h2>
+
+              <p>Choose the phone position used by the model.</p>
+            </div>
+          </div>
+
+          <div class="mode-selector">
+            <button
+              id="pocketButton"
+              class="mode-button active"
+              data-mode="pocket"
+            >
+              <span class="mode-icon">📱</span>
+
+              <span class="mode-info">
+                <strong>Pocket</strong>
+                <small>Phone in pocket</small>
+              </span>
+            </button>
+
+            <button id="handButton" class="mode-button" data-mode="hand">
+              <span class="mode-icon">✋</span>
+
+              <span class="mode-info">
+                <strong>Hand</strong>
+                <small>Phone held in hand</small>
+              </span>
+            </button>
+          </div>
+
+          <div class="tracking-controls">
+            <button id="startButton" class="start-button">
+              <span class="button-dot"></span>
+              Start Tracking
+            </button>
+
+            <button id="stopButton" class="stop-button" disabled>
+              Stop Tracking
+            </button>
+          </div>
+        </section>
+
+        <section class="pipeline-card">
+          <div class="section-title">
+            <div>
+              <h2>Collection Pipeline</h2>
+
+              <p>Data is collected in fixed windows before prediction.</p>
+            </div>
+          </div>
+
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <div class="pipeline-number">01</div>
+
+              <strong>Phone sensors</strong>
+
+              <span> Accelerometer + Gyroscope </span>
+            </div>
+
+            <div class="pipeline-arrow">→</div>
+
+            <div class="pipeline-step">
+              <div class="pipeline-number">02</div>
+
+              <strong id="pipelineRate">20 Hz</strong>
+
+              <span> One sample / 50 ms </span>
+            </div>
+
+            <div class="pipeline-arrow">→</div>
+
+            <div class="pipeline-step">
+              <div class="pipeline-number">03</div>
+
+              <strong id="pipelineWindow">4 sec</strong>
+
+              <span> <span id="windowSampleCount">80</span> samples </span>
+            </div>
+
+            <div class="pipeline-arrow">→</div>
+
+            <div class="pipeline-step">
+              <div class="pipeline-number">04</div>
+
+              <strong>ML API</strong>
+
+              <span> Activity prediction </span>
+            </div>
+          </div>
+
+          <div class="progress-container">
+            <div class="progress-label">
+              <span>Current window</span>
+
+              <span>
+                <strong id="windowProgress">0</strong>
+                /
+                <span id="windowTotal">80</span>
+              </span>
+            </div>
+
+            <div class="progress-bar">
+              <div id="windowProgressBar" class="progress-fill"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sensor-card">
+          <div class="section-title">
+            <div>
+              <h2>Sensor Diagnostics</h2>
+
+              <p>Live browser and device sensor status.</p>
+            </div>
+
+            <span id="secureConnectionBadge" class="diagnostic-badge">
+              Checking...
+            </span>
+          </div>
+
+          <div class="sensor-grid">
+            <div class="sensor-item">
+              <div class="sensor-item-header">
+                <span>Motion API</span>
+                <span id="motionApiIndicator" class="mini-indicator"></span>
+              </div>
+
+              <strong id="motionApiStatus"> Checking... </strong>
+            </div>
+
+            <div class="sensor-item">
+              <div class="sensor-item-header">
+                <span>Motion Events</span>
+                <span id="motionEventIndicator" class="mini-indicator"></span>
+              </div>
+
+              <strong id="motionEventStatus"> Waiting </strong>
+            </div>
+
+            <div class="sensor-item">
+              <div class="sensor-item-header">
+                <span>Accelerometer</span>
+                <span id="accelIndicator" class="mini-indicator"></span>
+              </div>
+
+              <strong id="accelStatus"> Waiting </strong>
+            </div>
+
+            <div class="sensor-item">
+              <div class="sensor-item-header">
+                <span>Gyroscope</span>
+                <span id="gyroIndicator" class="mini-indicator"></span>
+              </div>
+
+              <strong id="gyroStatus"> Waiting </strong>
+            </div>
+
+            <div class="sensor-item">
+              <div class="sensor-item-header">
+                <span>Samples collected</span>
+              </div>
+
+              <strong id="sampleCount"> 0 </strong>
+            </div>
+
+            <div class="sensor-item">
+              <div class="sensor-item-header">
+                <span>Current mode</span>
+              </div>
+
+              <strong id="currentMode"> Pocket </strong>
+            </div>
+          </div>
+
+          <div id="sensorWarning" class="sensor-warning hidden">
+            <strong>Sensor data unavailable</strong>
+
+            <p id="sensorWarningText">No motion events have been received.</p>
+          </div>
+        </section>
+
+        <section class="log-card">
+          <div class="section-title">
+            <div>
+              <h2>Activity Log</h2>
+
+              <p>Sensor, API and prediction events.</p>
+            </div>
+
+            <button id="clearLogButton" class="clear-button">Clear</button>
+          </div>
+
+          <div id="logContainer" class="log-container">
+            <div class="log-entry">
+              <span class="log-indicator"></span>
+
+              <div>
+                <strong>System ready</strong>
+
+                <p>Sensor diagnostics initialized.</p>
+              </div>
+
+              <time>Now</time>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>Activity Recognition · Sensor ML Demo</footer>
+    </div>
+
+    <script src="script.js"></script>
   </body>
 </html>

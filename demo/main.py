@@ -1,7 +1,9 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Query
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from sensor_batch import SensorBatch
 from sklearn.pipeline import Pipeline
+from typing import Literal
 import os
 import joblib
 import pandas as pd
@@ -9,14 +11,36 @@ from transformers import RawFeatureTransformer
 
 top = os.path.dirname(__file__)
 
+
 app = FastAPI()
 
-model: Pipeline = joblib.load(f"{top}/phone_train.pkl")
+model_phone: Pipeline = joblib.load(f"{top}/phone_train.pkl")
+model_watch: Pipeline = joblib.load(f"{top}/watch_train.pkl")
+
+ACTIVITIES = {
+    "A": "Walking",
+    "B": "Jogging",
+    "C": "Stairs",
+    "D": "Sitting",
+    "E": "Standing",
+    "F": "Typing",
+    "G": "Brushing Teeth",
+    "H": "Eating Soup",
+    "I": "Eating Chips",
+    "J": "Eating Pasta",
+    "K": "Drinking from Cup",
+    "L": "Eating Sandwich",
+    "M": "Kicking (Soccer Ball)",
+    "O": "Playing Catch w/Tennis Ball",
+    "P": "Dribbling (Basketball)",
+    "Q": "Writing",
+    "R": "Clapping",
+    "S": "Folding Clothes",
+}
 
 
 @app.post("/predict")
-async def predict(batch: SensorBatch):
-
+async def predict(batch: SensorBatch, mode: Literal["pocket", "hand"] = Query()):
     columns = [
         "timeStamp",
         "x_accel",
@@ -30,27 +54,44 @@ async def predict(batch: SensorBatch):
     df = pd.DataFrame(
         [
             [
-                d["timeStamp"],
-                d["x_accel"],
-                d["y_accel"],
-                d["z_accel"],
-                d["x_gyro"],
-                d["y_gyro"],
-                d["z_gyro"],
+                entry.timeStamp,
+                entry.x_accel,
+                entry.y_accel,
+                entry.z_accel,
+                entry.x_gyro,
+                entry.y_gyro,
+                entry.z_gyro,
             ]
-            for d in batch.data
+            for entry in batch.data
         ],
         columns=columns,
     )
 
     df["timeStamp"] = pd.to_datetime(df["timeStamp"], unit="ns")
 
-    prediction = model.predict(df)[0]
-    return prediction
+    if mode == "pocket":
+
+        prediction = model_phone.predict(df)[0]
+
+        try:
+            probabilities = model_phone.predict_proba(df)
+            confidence = float(probabilities.max())
+        except:
+            confidence = None
+
+        return {"prediction": ACTIVITIES[str(prediction)], "confidence": confidence}
+    elif mode == "hand":
+        prediction = model_watch.predict(df)[0]
+
+        try:
+            probabilities = model_watch.predict_proba(df)
+            confidence = float(probabilities.max())
+        except:
+            confidence = None
+        return {"prediction": ACTIVITIES[str(prediction)], "confidence": confidence}
 
 
 app.mount("/", StaticFiles(directory=f"{top}/static", html=True), name="static")
-
 
 if __name__ == "__main__":
     import uvicorn
