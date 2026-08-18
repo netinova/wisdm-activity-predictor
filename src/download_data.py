@@ -30,7 +30,7 @@ def download_file(url, dest_path, force=False):
         print(f"   [ERROR] Download failed: {e}", file=sys.stderr)
         sys.exit(1)
 
-    total_size = int(response.headers.get("content-length", 0))
+    total_size = int(response.headers.get("content-length", 295e6))
     with open(dest_path, "wb") as f:
         with tqdm(
             total=total_size,
