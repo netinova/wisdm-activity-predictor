@@ -7,6 +7,7 @@ from typing import Literal
 import os
 import joblib
 import pandas as pd
+from huggingface_hub import hf_hub_download
 from transformers import RawFeatureTransformer
 
 top = os.path.dirname(__file__)
@@ -14,8 +15,31 @@ top = os.path.dirname(__file__)
 
 app = FastAPI()
 
-model_phone: Pipeline = joblib.load(f"{top}/phone_train.pkl")
-model_watch: Pipeline = joblib.load(f"{top}/watch_train.pkl")
+
+REPO_ID = "netinova/wisdm-activity-predictor"
+
+
+model_files = ["phone_train.pkl", "watch_train.pkl"]
+
+loaded_models = {}
+
+for filename in model_files:
+    local_path = os.path.join(top, filename)
+
+    if not os.path.exists(local_path):
+        print(f"  {filename} not found locally. Downloading from Hugging Face...")
+        os.makedirs(top, exist_ok=True)
+
+        hf_hub_download(REPO_ID, filename, local_dir=top)
+        
+        print(f"  Downloaded {filename}")
+
+    model = joblib.load(local_path)
+    loaded_models[filename] = model
+    print(f"  Loaded {filename}")
+
+model_phone = loaded_models["phone_train.pkl"]
+model_watch = loaded_models["watch_train.pkl"]
 
 ACTIVITIES = {
     "A": "Walking",
