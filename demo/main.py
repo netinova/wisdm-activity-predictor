@@ -31,7 +31,7 @@ for filename in model_files:
         os.makedirs(top, exist_ok=True)
 
         hf_hub_download(REPO_ID, filename, local_dir=top)
-        
+
         print(f"  Downloaded {filename}")
 
     model = joblib.load(local_path)

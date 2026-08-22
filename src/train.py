@@ -82,13 +82,14 @@ def build_pipeline(mode, classifier, window_sec):
     )
 
 
-def save_model(model, mode, final_model=False):
+def save_model(model, mode, window=2, raw=False, final_model=False):
     target_dir = MODELS_DIR
     os.makedirs(target_dir, exist_ok=True)
     suffix = "final" if final_model else "train"
-    model_path = os.path.join(target_dir, f"{mode}_{suffix}.pkl")
+    suffix += "_raw" if raw else "_pipeline"
+    model_path = os.path.join(target_dir, f"{mode}_{suffix}_({window}s).pkl")
     joblib.dump(model, model_path, compress=3)
-    print(f"Saved model to {model_path}")
+    print(f"    Saved model to {model_path}")
     return model_path
 
 
@@ -111,12 +112,12 @@ def save_reports(mode, y_true, y_pred):
     fig.savefig(confusion_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
 
-    print(f"Saved report to {report_path}")
-    print(f"Saved confusion matrix to {confusion_path}")
+    print(f"    Saved report to {report_path}")
+    print(f"    Saved confusion matrix to {confusion_path}")
 
 
-def train_mode(mode, window, report=False, final_model=False):
-    print(f"\nTraining {mode} model with window {window}s")
+def train_mode(mode, window, report=False, raw=False, final_model=False):
+    print(f"\n    Training {mode} model with window {window}s")
 
     if not os.path.isdir(PARAM_DIR):
         raise FileNotFoundError("Best params not found! Please run tune.py first.")
@@ -130,21 +131,25 @@ def train_mode(mode, window, report=False, final_model=False):
         X_test, y_test = load_processed_data(mode=mode, window=window, test_data=True)
         X_fit = pd.concat([X_train, X_test], axis=0)
         y_fit = pd.concat([y_train, y_test], axis=0)
-        print(f"Final model training on {len(X_fit)} samples (train + test)")
+        print(f"    Final model training on {len(X_fit)} samples (train + test)")
     else:
         X_fit, y_fit = X_train, y_train
 
     if report:
         y_pred = cross_val_predict(classifier, X_train, y_train, cv=5)
         print(
-            f"Cross-validation accuracy (5-fold): {accuracy_score(y_train, y_pred):.4f}"
+            f"    Cross-validation accuracy (5-fold): {accuracy_score(y_train, y_pred):.4f}"
         )
         save_reports(mode, y_train, y_pred)
 
     classifier.fit(X_fit, y_fit)
 
-    pipeline = build_pipeline(mode, classifier, window)
-    save_model(pipeline, mode, final_model=final_model)
+    if not raw:
+        model = build_pipeline(mode, classifier, window)
+    else:
+        model = classifier
+
+    save_model(model, mode, WINDOW_SIZE, raw, final_model=final_model)
 
 
 def main():
@@ -171,6 +176,11 @@ def main():
         help="Generate a classification report and confusion matrix image from 5-fold cross-validation predictions on the training data.",
     )
     parser.add_argument(
+        "--raw",
+        action="store_true",
+        help="will not build the full pipeline and just save the model.",
+    )
+    parser.add_argument(
         "--final_model",
         action="store_true",
         help="Fit the final model on the combined train+test preprocessed data.",
@@ -187,6 +197,7 @@ def main():
             mode=mode,
             window=args.window,
             report=args.report,
+            raw=args.raw,
             final_model=args.final_model,
         )
 

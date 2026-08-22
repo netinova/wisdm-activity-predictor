@@ -6,3 +6,4 @@ reports/
 src/__pycache__/
 demo/__pycache__/
 demo/*pkl
+demo/.cache/
