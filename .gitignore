@@ -2,7 +2,7 @@ data/
 models/
 .venv/
 .vscode/
-reports/
+/reports/
 src/__pycache__/
 demo/__pycache__/
 demo/*pkl
