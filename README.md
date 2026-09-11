@@ -1,4 +1,4 @@
-# 📱 WISDM Activity Predictor
+# WISDM Activity Predictor
 
 A machine learning project for recognizing human activities using motion data from smartphones and smartwatches.
 
@@ -10,23 +10,23 @@ The project also includes a small browser-based demo that can collect live motio
 
 ---
 
-## ✨ Highlights
+## Highlights
 
-- 📱 Activity recognition using smartphone sensors
-- ⌚ Activity recognition using smartwatch sensors
-- 📱⌚ Combined smartphone + smartwatch models
-- ⚙️ Automated preprocessing and feature extraction
-- 🎛️ Hyperparameter tuning with Optuna
-- 🔁 3-fold cross-validation
-- 🔒 Completely held-out test set for final evaluation
-- 📊 Classification reports and confusion matrices
-- 🚀 FastAPI inference API
-- 🌐 Browser-based sensor demo
-- 📡 Live accelerometer + gyroscope data collection
+- Activity recognition using smartphone sensors
+- Activity recognition using smartwatch sensors
+- Combined smartphone + smartwatch models
+- Automated preprocessing and feature extraction
+- Hyperparameter tuning with Optuna
+- 3-fold cross-validation
+- Completely held-out test set for final evaluation
+- Classification reports and confusion matrices
+- FastAPI inference API
+- Browser-based sensor demo
+- Live accelerometer + gyroscope data collection
 
 ---
 
-## 🧠 The Idea
+## The Idea
 
 Human Activity Recognition (HAR) is the task of identifying what a person is doing based on sensor measurements.
 
@@ -66,7 +66,7 @@ This project uses those characteristics to classify sensor windows into one of *
 
 ---
 
-# 🔬 Dataset
+# Dataset
 
 The project uses the **WISDM Smartphone and Smartwatch Activity and Biometrics Dataset**.
 
@@ -76,9 +76,9 @@ For this project, the data was separated into three configurations:
 
 | Model     | Input                                |
 | --------- | ------------------------------------ |
-| 📱 Phone  | Smartphone accelerometer + gyroscope |
-| ⌚ Watch  | Smartwatch accelerometer + gyroscope |
-| 📱⌚ Both | Smartphone + smartwatch sensors      |
+| Phone  | Smartphone accelerometer + gyroscope |
+| Watch  | Smartwatch accelerometer + gyroscope |
+| Both | Smartphone + smartwatch sensors      |
 
 An important part of the experiment was keeping the users out of the final feature representation.
 
@@ -86,7 +86,7 @@ The goal was to recognize the **activity from movement**, rather than recognize 
 
 ---
 
-# ⚙️ Preprocessing & Feature Engineering
+# Preprocessing & Feature Engineering
 
 The preprocessing pipeline converts the raw sensor recordings into fixed-size samples that can be used by a traditional machine learning model.
 
@@ -112,7 +112,7 @@ The preprocessing and feature engineering steps are intentionally kept together 
 
 ---
 
-# 🤖 Model
+# Model
 
 The final classifier is a **Random Forest**.
 
@@ -135,7 +135,7 @@ src/
 
 ---
 
-# 🔒 Evaluation
+# Evaluation
 
 One of the things I wanted to be particularly careful about was the final evaluation.
 
@@ -171,15 +171,15 @@ This separation is important because it gives a more honest estimate of how the 
 
 ---
 
-# 📊 Results
+# Results
 
 The final held-out test results are:
 
 | Sensor Configuration | F1 Score |
 | -------------------- | -------: |
-| 📱 Phone             | **0.87** |
-| ⌚ Watch             | **0.83** |
-| 📱⌚ Phone + Watch   | **0.91** |
+| Phone             | **0.87** |
+| Watch             | **0.83** |
+| Phone + Watch   | **0.91** |
 
 The combined model performed best, reaching an F1 score of approximately **0.91** on the held-out test set.
 
@@ -189,7 +189,7 @@ The results also show that combining the two sensor sources provides useful addi
 
 ---
 
-# 📈 Detailed Results
+# Detailed Results
 
 The repository contains the complete evaluation output in [`reports/`](reports/).
 
@@ -200,21 +200,21 @@ For each model there are:
 - Held-out test classification reports
 - Held-out test confusion matrices
 
-### 📱 Phone
+### Phone
 
 | Evaluation       | Report                                                                           | Confusion Matrix                                                       |
 | ---------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Cross-validation | [`classification_report.txt`](reports/phone/classification_report.txt)           | [`confusion_matrix.png`](reports/phone/confusion_matrix.png)           |
 | Held-out test    | [`classification_report_test.txt`](reports/phone/classification_report_test.txt) | [`confusion_matrix_test.png`](reports/phone/confusion_matrix_test.png) |
 
-### ⌚ Watch
+### Watch
 
 | Evaluation       | Report                                                                           | Confusion Matrix                                                       |
 | ---------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Cross-validation | [`classification_report.txt`](reports/watch/classification_report.txt)           | [`confusion_matrix.png`](reports/watch/confusion_matrix.png)           |
 | Held-out test    | [`classification_report_test.txt`](reports/watch/classification_report_test.txt) | [`confusion_matrix_test.png`](reports/watch/confusion_matrix_test.png) |
 
-### 📱⌚ Phone + Watch
+### Phone + Watch
 
 | Evaluation       | Report                                                                          | Confusion Matrix                                                      |
 | ---------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
@@ -223,7 +223,7 @@ For each model there are:
 
 ---
 
-# 📱 Demo
+# Demo
 
 The project also contains a small end-to-end demo connecting the trained models to real sensor data.
 
@@ -249,7 +249,7 @@ The API then performs the same feature extraction process and uses the appropria
 
 ---
 
-## ✋ Hand / Pocket Modes
+## Hand / Pocket Modes
 
 The demo supports two modes:
 
@@ -280,7 +280,7 @@ The API accepts a sensor batch in the following general form:
 
 ---
 
-# 🖥️ Demo Screenshots
+# Demo Screenshots
 
 The frontend was designed as a small, clean interface rather than a full application.
 
@@ -307,7 +307,7 @@ It provides:
 
 ---
 
-# 🚀 Running the Demo
+# Running the Demo
 
 The demo is **not currently hosted online**.
 
@@ -317,7 +317,7 @@ Because the demo needs a secure context between the front-end and the back-end,\
 The easiest way I tested the demo was using an Android phone connected to the development machine through
 **ADB wireless debugging**.
 
-## 🖥️ 1. Install ADB
+## 1. Install ADB
 
 The demo requires **Android Debug Bridge (ADB)** to connect the development computer to an Android phone.
 
@@ -383,7 +383,7 @@ If your package manager does not provide ADB, you can download the **Android SDK
 
 ---
 
-## 📱 2. Enable Developer Mode on Android
+## 2. Enable Developer Mode on Android
 
 On your Android phone:
 
@@ -396,7 +396,7 @@ The exact location can vary between Android versions and manufacturers.
 
 ---
 
-## 📡 3. Enable Wireless Debugging
+## 3. Enable Wireless Debugging
 
 Open:
 
@@ -408,7 +408,7 @@ Make sure the phone and development computer are connected to the same local net
 
 ---
 
-## 🔗 4. Pair the Phone with ADB
+## 4. Pair the Phone with ADB
 
 From your computer, run:
 
@@ -448,7 +448,7 @@ Your phone should appear in the list.
 
 ---
 
-## 🔄 5. Forward the FastAPI Server to the Phone
+## 5. Forward the FastAPI Server to the Phone
 
 Once the phone is connected through ADB, run:
 
@@ -466,7 +466,7 @@ localhost:8000
 
 ---
 
-## 🚀 6. Start the Backend
+## 6. Start the Backend
 
 From the project directory, install the dependencies:
 
@@ -490,7 +490,7 @@ The demo should now be accessible from the phone while the FastAPI backend conti
 
 ---
 
-## 🍎 iOS
+## iOS
 
 **Work in progress.**
 
@@ -500,7 +500,7 @@ The Android setup above is the configuration currently tested with the demo.
 
 ---
 
-# ⚠️ Real-World Testing
+# Real-World Testing
 
 The offline evaluation results are good, but there is an important distinction between those results and the live demo.
 
@@ -530,7 +530,7 @@ For the scope of this project, I decided to keep the live application as a demon
 
 ---
 
-# 🔁 Reproducible Pipeline
+# Reproducible Pipeline
 
 One of the main improvements I made during development was moving away from a workflow that depended entirely on notebooks.
 
@@ -566,7 +566,7 @@ feel free to run the scripts and experiment with them!
 
 ---
 
-# 🧰 Scripts & Usage
+# Scripts & Usage
 
 The main ML workflow is split into separate scripts so that each stage can be run independently.
 
@@ -638,7 +638,7 @@ The resulting classification report and confusion matrix are saved separately fr
 
 ---
 
-## 🔧 Script Parameters
+## Script Parameters
 
 Most scripts expose their configuration through command-line arguments and also some values that is shared between\
 scripts which are in `config.py` such as the window size.
@@ -665,7 +665,7 @@ and also check the `config.py`
 
 ---
 
-# 🗂️ Project Structure
+# Project Structure
 
 ```text
 wisdm-activity-predictor/
@@ -699,7 +699,7 @@ wisdm-activity-predictor/
 
 ---
 
-# 🛠️ Tech Stack
+# Tech Stack
 
 ### Machine Learning
 
@@ -730,7 +730,7 @@ wisdm-activity-predictor/
 
 ---
 
-# 🔮 Future Improvements
+# Future Improvements
 
 There are several directions this project could be taken further:
 
@@ -745,7 +745,7 @@ There are several directions this project could be taken further:
 
 ---
 
-# 📚 Dataset
+# Dataset
 
 This project uses the **WISDM Smartphone and Smartwatch Activity and Biometrics Dataset**.
 
@@ -753,7 +753,7 @@ This project uses the **WISDM Smartphone and Smartwatch Activity and Biometrics 
 
 ---
 
-# 📄 License
+# License
 
 This project is licensed under the MIT License.
 
@@ -761,7 +761,7 @@ See [`LICENSE`](LICENSE) for more information.
 
 ---
 
-⭐ If you found the project interesting, feel free to explore the source code, notebooks, reports, and demo.
+If you found the project interesting, feel free to explore the source code, notebooks, reports, and demo.
 
 [1]: https://docs.github.com/en/contributing/writing-for-github-docs/creating-diagrams-for-github-docs?utm_source=chatgpt.com "Creating diagrams for GitHub Docs - GitHub Docs"
 [2]: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes?utm_source=chatgpt.com "About the repository README file - GitHub Docs"
